@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         No Unliked Replies
 // @namespace    http://tampermonkey.net/
-// @version      2024-04-09
+// @version      2024-04-19
 // @description  Hide any X replies with no likes
 // @author       Alec Larson
-// @match        https://twitter.com/*/status/*
+// @match        https://twitter.com/*
 // ==/UserScript==
 
 ;(function () {
@@ -63,7 +63,12 @@
   // find the element matching the likesSelector (with querySelector) and hide
   // the tweet if its textContent is an empty string.
   const observer = new MutationObserver((mutations) => {
-    if (!location.href.includes('/status/')) {
+    const { href } = location
+    if (
+      !href.includes('/status/') &&
+      !href.includes('/search') &&
+      !href.includes('/lists')
+    ) {
       return
     }
     function hideTweet(tweet) {
