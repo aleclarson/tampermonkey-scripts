@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         No Unliked Replies
+// @name         X: No Lames
 // @namespace    http://tampermonkey.net/
 // @version      2024-04-19
-// @description  Hide any X replies with no likes
+// @description  Fade out or hide lame X replies
 // @author       Alec Larson
 // @match        https://twitter.com/*
 // ==/UserScript==
@@ -16,6 +16,7 @@
 
   const tweetSelector = '[data-testid="tweet"]'
   const likesSelector = '[data-testid="like"]'
+  const nameSelector = '[data-testid="User-Name"]'
 
   // If the text ends with "K", multiple by 1000. If it ends with "M", multiple
   // by 1000000. If empty, return zero.
@@ -57,21 +58,46 @@
     })
   }
 
+  let mainTweetId = null
+  let mainTweetUserName = null
+
   // Create a MutationObserver that observes the entire document. For each
   // mutation record, check each added node with both `Element#matches` and
   // `Element#querySelectorAll` for the tweetSelector. For each matched tweet,
   // find the element matching the likesSelector (with querySelector) and hide
   // the tweet if its textContent is an empty string.
   const observer = new MutationObserver((mutations) => {
-    const { href } = location
-    if (
-      !href.includes('/status/') &&
-      !href.includes('/search') &&
-      !href.includes('/lists')
-    ) {
-      return
-    }
+    const { pathname } = location
+    const isStatusPage = pathname.includes('/status/')
+    const isSearchPage = pathname.includes('/search')
+    const isListPage = pathname.includes('/lists')
+
+    if (isStatusPage) {
+      mainTweetId = pathname.match(/\/status\/(\d+)/)[1]
+    } else if (isListPage || isSearchPage) {
+      mainTweetId = null
+      mainTweetUserName = null
+    } else return
+
     function hideTweet(tweet) {
+      const tweetId = tweet
+        .querySelector('time')
+        .closest('a')
+        .href.match(/\/status\/(\d+)/)[1]
+
+      const userNameElement = tweet.querySelector(nameSelector)
+      const userName = userNameElement.innerHTML.match(/@([^ <]+)/)[1]
+
+      // The main tweet is never hidden.
+      if (tweetId === mainTweetId) {
+        mainTweetUserName = userName
+        return
+      }
+      if (userName === mainTweetUserName) {
+        // Tweets from the main tweet's author are never hidden.
+        return
+      }
+
       const likes = tweet.querySelector(likesSelector)
       if (likes == null) return
 
