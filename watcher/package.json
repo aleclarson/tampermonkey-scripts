@@ -1,0 +1,11 @@
+{
+  "name": "tampermonkey-watcher",
+  "dependencies": {
+    "@cush/exec": "^1.8.0",
+    "chokidar": "^3.6.0",
+    "sucrase": "^3.35.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7"
+  }
+}

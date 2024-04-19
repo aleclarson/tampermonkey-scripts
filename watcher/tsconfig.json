@@ -1,0 +1,10 @@
+{
+  "include": ["start", "*.ts"],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "checkJs": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "module": "commonjs"
+  }
+}
