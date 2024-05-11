@@ -58,8 +58,11 @@
     })
   }
 
+  const hiddenTweets = new Set()
+
   let mainTweetId = null
   let mainTweetUserName = null
+  let currentUserName = null
 
   // Create a MutationObserver that observes the entire document. For each
   // mutation record, check each added node with both `Element#matches` and
@@ -94,7 +97,34 @@
         return
       }
       if (userName === mainTweetUserName) {
+        // Ensure the tweet being replied to isn't hidden.
+        const previousCell = tweet.closest(
+          '[data-testid="cellInnerDiv"]',
+        ).previousSibling
+        if (previousCell) {
+          const previousTweet = previousCell.querySelector(
+            '[data-testid="tweet"]',
+          )
+          hiddenTweets.delete(previousTweet)
+          previousTweet.style.display = ''
+        }
         // Tweets from the main tweet's author are never hidden.
+        return
+      }
+
+      if (currentUserName == null) {
+        currentUserName = Array.from(
+          document.querySelectorAll(
+            'header [data-testid="SideNav_AccountSwitcher_Button"] span',
+          ),
+        )
+          .find((span) => span.textContent.includes('@'))
+          ?.textContent.match(/@([^ <]+)/)[1]
+
+        log('Current user is', currentUserName)
+      }
+      if (userName === currentUserName) {
+        // Tweets from the current user are never hidden.
         return
       }
 
@@ -104,8 +134,9 @@
       const likeCount = parseLikeCount(likes.textContent.trim())
 
       if (likeCount === 0) {
+        hiddenTweets.add(tweet)
         tweet.style.display = 'none'
-        log('Hiding tweet with no likes:', tweet)
+        log('Hiding tweet with no likes:', { userName, element: tweet })
       }
 
       if (likeCount < 5) {

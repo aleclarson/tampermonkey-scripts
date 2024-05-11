@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         X.com ~ Shift+Click to Mute
+// @name         X.com ~ Shift+Click to Block
 // @namespace    http://tampermonkey.net/
 // @version      2024-04-10
-// @description  Mute the tweet under the cursor using the Shift key and click.
+// @description  Block the tweet under the cursor using the Shift key and click.
 // @author       Alec Larson
 // @match        https://twitter.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=twitter.com
@@ -13,7 +13,7 @@
   'use strict'
 
   function log(...args) {
-    console.log('[shift-mute]', ...args)
+    console.log('[shift-block]', ...args)
   }
 
   /** @type {HTMLDivElement} */
@@ -74,13 +74,23 @@
         setTimeout(() => {
           const muteBtn = Array.from(
             document.querySelectorAll('[role="menu"] [role="menuitem"]'),
-          ).find((e) => e.textContent.includes('Mute'))
+          ).find((e) => e.textContent.includes('Block'))
 
           if (muteBtn) {
             muteBtn.click()
-            log('muted %s', tweet.querySelectorAll('a')[2]?.textContent)
+            setTimeout(() => {
+              const confirmBtn = document.querySelector(
+                '[data-testid="confirmationSheetConfirm"]',
+              )
+              if (confirmBtn) {
+                confirmBtn.click()
+                log('blocked %s', tweet.querySelectorAll('a')[2]?.textContent)
+              } else {
+                log('confirm button not found')
+              }
+            }, 50)
           } else {
-            log('mute button not found')
+            log('block button not found')
           }
         }, 50)
       }
