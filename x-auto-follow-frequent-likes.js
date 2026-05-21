@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         X Auto Follow Frequent Likes
 // @namespace    https://x.com/
-// @version      1.1
-// @description  Automatically follows users after liking three of their posts within 30 days
+// @version      1.2
+// @description  Automatically follows users after liking three non-reply posts within 30 days
 // @match        https://x.com/*
 // @match        https://twitter.com/*
 // @run-at       document-idle
@@ -34,7 +34,7 @@
     if (!likeButton) return;
 
     const tweet = likeButton.closest(TWEET_SELECTOR);
-    if (!tweet || pendingTweets.has(tweet)) return;
+    if (!tweet || pendingTweets.has(tweet) || isReplyTweet(tweet)) return;
 
     const username = getUsername(tweet);
     if (!username) return;
@@ -102,6 +102,33 @@
     if (followItem) followItem.click();
   }
 
+  function isReplyTweet(tweet) {
+    if (isStatusPage()) return isReplyOnStatusPage(tweet);
+    if (isHomeFeed()) return isReplyOnHomeFeed(tweet);
+    return false;
+  }
+
+  function isReplyOnStatusPage(tweet) {
+    return document.querySelector('[data-testid="tweet"]') !== tweet;
+  }
+
+  function isReplyOnHomeFeed(tweet) {
+    const cell = tweet.closest('[data-testid="cellInnerDiv"]');
+    const previousCellContent = cell?.previousElementSibling?.firstElementChild;
+    if (!previousCellContent) return false;
+
+    const { borderBottomWidth } = getComputedStyle(previousCellContent);
+    return borderBottomWidth === "0px" || borderBottomWidth === "0";
+  }
+
+  function isStatusPage() {
+    return /^\/[^/]+\/status\//.test(location.pathname);
+  }
+
+  function isHomeFeed() {
+    return location.pathname === "/home";
+  }
+
   function getUsername(tweet) {
     const userNameArea = tweet.querySelector(USER_NAME_SELECTOR);
     const links = userNameArea ? userNameArea.querySelectorAll('a[href^="/"]') : tweet.querySelectorAll('a[href^="/"]');
@@ -149,6 +176,9 @@
 
 /*
 Changelog:
+
+1.2
+- Ignore likes on replies when they can be identified on status pages and the /home feed.
 
 1.1
 - Track likes from any X page instead of only the /home feed.
