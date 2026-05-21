@@ -13,3 +13,6 @@ This folder contains only Tampermonkey userscripts.
   - Update the changelog whenever the script changes.
   - Include the new version number and a concise summary of the change.
 - Keep each file as a self-contained Tampermonkey script unless there is a clear reason to do otherwise.
+- Keep `README.md` in sync with the script collection:
+  - Add a concise entry whenever a new script is added.
+  - Update the relevant entry whenever an existing script receives a significant improvement or behavior change.
