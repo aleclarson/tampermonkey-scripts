@@ -8,7 +8,7 @@ A small collection of self-contained Tampermonkey userscripts.
 - `npmx-preserve-npm-referrer.js` — Removes `noreferrer` from npm package links on npmx.dev so npmjs pages can detect npmx.dev as the referrer.
 - `x-auto-follow-frequent-likes.js` — Automatically follows X/Twitter users after you like three non-reply posts by them within 30 days.
 - `x-auto-repost-likes.js` — Automatically reposts non-reply X/Twitter posts after you like them.
-- `x-hide-home-quotes.js` — Hides quote posts in the X/Twitter home feed.
+- `x-hide-home-quotes.js` — Hides quote posts and attached replies in the X/Twitter home feed.
 - `x-highlight.js` — Highlights X/Twitter posts with a low comment-to-view ratio using a green border.
 - `x-no-lames.js` — Fades or hides low-like X/Twitter replies on status, search, and list pages.
 - `x-shift-block.js` — Adds Shift+Click blocking for the X/Twitter post under the cursor.
