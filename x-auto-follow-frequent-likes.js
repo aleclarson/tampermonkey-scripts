@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         X Auto Follow Frequent Home Likes
+// @name         X Auto Follow Frequent Likes
 // @namespace    https://x.com/
-// @version      1.0
-// @description  Automatically follows users after liking three of their posts from the X home feed within 30 days
+// @version      1.1
+// @description  Automatically follows users after liking three of their posts within 30 days
 // @match        https://x.com/*
 // @match        https://twitter.com/*
 // @run-at       document-idle
@@ -30,8 +30,6 @@
   document.addEventListener("click", handleClick, true);
 
   async function handleClick(event) {
-    if (!isHomeFeed()) return;
-
     const likeButton = event.target.closest?.(LIKE_SELECTOR);
     if (!likeButton) return;
 
@@ -147,13 +145,13 @@
     });
   }
 
-  function isHomeFeed() {
-    return location.pathname === "/home";
-  }
 })();
 
 /*
 Changelog:
+
+1.1
+- Track likes from any X page instead of only the /home feed.
 
 1.0
 - Added 30-day per-user home-feed like tracking and automatic follow on the third like.
